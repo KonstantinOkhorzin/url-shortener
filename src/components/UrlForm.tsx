@@ -8,6 +8,8 @@ import { Status } from '../types';
 
 interface Props {
   setFullUrl: (text: string) => void;
+  setError: (text: string) => void;
+  setStatus: (status: Status) => void;
   status: Status;
 }
 
@@ -21,7 +23,7 @@ const schema = yup
   })
   .required();
 
-const UrlForm: FC<Props> = ({ setFullUrl, status }) => {
+const UrlForm: FC<Props> = ({ setFullUrl, setError, setStatus, status }) => {
   const {
     register,
     handleSubmit,
@@ -38,6 +40,16 @@ const UrlForm: FC<Props> = ({ setFullUrl, status }) => {
       reset();
     }
   }, [isSubmitSuccessful, reset, status]);
+
+  useEffect(() => {
+    if (!errors.url) {
+      setError('');
+      setStatus(Status.IDLE);
+    } else {
+      setError(errors.url.message ?? '');
+      setStatus(Status.REJECTED);
+    }
+  }, [setError, setStatus, errors.url]);
 
   return (
     <Box
